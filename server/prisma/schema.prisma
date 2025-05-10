@@ -1,0 +1,36 @@
+datasource db {
+    provider = "mysql"
+    url = env("DB_URL")
+}
+
+generator client {
+    provider = "prisma-client-py"
+    interface = "asyncio"
+    recursive_type_depth = 5
+}
+
+model User {
+    id       Int    @id @default(autoincrement())
+    username String
+    cpf      String @unique
+    quizzes     Quiz[]
+}
+
+model Quiz {
+    id          Int      @id @default(autoincrement())
+    startAt     DateTime @default(now())
+    endAt       DateTime @updatedAt
+    createdBy   Int     
+    questions   Question[]
+    User        User   @relation(fields: [createdBy], references: [id])
+}
+
+model Question {
+    id               Int     @id @default(autoincrement())
+    category         String
+    text             String
+    correctAnswer    String
+    incorrectAnswers String
+    quizId           Int
+    quiz             Quiz @relation(fields: [quizId], references: [id])
+}
