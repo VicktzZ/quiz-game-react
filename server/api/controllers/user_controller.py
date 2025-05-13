@@ -6,7 +6,7 @@ class UserController:
         self.user_repository = UserRepository()
 
     async def create_user(self, user: UserDto):
-        return await self.user_repository.create(user)
+        return await self.user_repository.sign_in_or_sign_up(user)
 
     async def get_all_users(self):
         return await self.user_repository.get_all()
@@ -19,6 +19,3 @@ class UserController:
 
     async def delete_user(self, id: int):
         return await self.user_repository.delete(id)
-    
-    async def sign_in(self, user: UserDto):
-        return await self.user_repository.sign_in(user)

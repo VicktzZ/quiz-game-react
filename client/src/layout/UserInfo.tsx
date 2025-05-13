@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } from "@radix-ui/react-dialog"
 import { checkCPF } from "@/utils"
 import { userService } from "@/services/userService"
+import { useLoader } from "@/contexts/LoaderContext"
 
 function UserAvatar() {
     return (
@@ -18,7 +19,9 @@ function UserAvatar() {
 }
 
 export default function UserInfo() {
-    const { user } = useUserSession()
+    const { user, login } = useUserSession()
+    const { setLoading } = useLoader()
+
     const schema = z.object({
         username: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
         cpf: z.string().min(11, "CPF deve ter 11 caracteres").refine(checkCPF, "CPF inválido"),
@@ -28,7 +31,15 @@ export default function UserInfo() {
     })  
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
-        
+        setLoading(true)
+        const res = await userService.POST(data)
+        console.log(res)
+
+        if (res.status < 300) {
+            login(res.data)
+        }
+
+        setLoading(false)
     }
 
     return (

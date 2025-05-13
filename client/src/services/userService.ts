@@ -3,15 +3,7 @@ import { Service } from "./Service"
 
 class UserService extends Service<User> {
     constructor() {
-        super()
-    }
-
-    async signIn(user: User) {
-        return await this.POST("/auth/sign-in", user)
-    }
-
-    async signUp(user: User) {
-        return await this.POST("/auth/sign-up", user)
+        super("/user")
     }
 }
 

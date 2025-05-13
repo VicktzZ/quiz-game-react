@@ -4,7 +4,7 @@ class UserRepository:
     def __init__(self):
         self.db = Prisma()
 
-    async def create(self, user: UserDto):
+    async def sign_in_or_sign_up(self, user: UserDto):
         try:
             result = None
             await self.db.connect()
@@ -17,25 +17,10 @@ class UserRepository:
                 result = created_user
             elif user.cpf == user_data['cpf'] and user.username == user_data['username']:
                 await self.db.disconnect()
-                raise ValueError("CPF ou nome de usuário inválido")
+                result = user
             elif user.cpf != user_data['cpf'] or user.username != user_data['username']:
                 await self.db.disconnect()
-                raise ValueError("CPF ou nome de usuário inválido")
-        except Exception as e:
-            await self.db.disconnect()
-            raise e
-        finally:
-            await self.db.disconnect()
-        return result
-
-    
-    async def sign_in(self, user: UserDto):
-        try:
-            result = None
-            await self.db.connect()
-            user = await self.db.user.find_first(where={'username': user.username, 'cpf': user.cpf})
-            await self.db.disconnect()
-            result = user
+                raise Exception("CPF ou nome de usuário inválido")
         except Exception as e:
             await self.db.disconnect()
             raise e

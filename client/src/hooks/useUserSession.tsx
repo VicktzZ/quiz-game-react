@@ -1,9 +1,10 @@
 import { useState } from "react";
+import type { User } from "@/types";
 
 export default function useUserSession() {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "null"))
+    const [ user, setUser ] = useState(JSON.parse(localStorage.getItem("user") || "null"))
 
-    const login = (user: string) => {
+    const login = (user: User) => {
         localStorage.setItem("user", JSON.stringify(user))
         setUser(user)
     }
