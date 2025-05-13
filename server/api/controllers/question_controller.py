@@ -1,3 +1,4 @@
+from typing import List
 from repositories.question_repository import QuestionRepository
 from models.Question import QuestionDto
 
@@ -19,3 +20,7 @@ class QuestionController:
 
     async def delete_question(self, id: int):
         return await self.question_repository.delete(id)
+    
+
+    async def create_multiple_questions(self, questions: List[QuestionDto]):
+        return await self.question_repository.create_multiple(questions)

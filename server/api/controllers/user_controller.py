@@ -19,3 +19,6 @@ class UserController:
 
     async def delete_user(self, id: int):
         return await self.user_repository.delete(id)
+    
+    async def sign_in(self, user: UserDto):
+        return await self.user_repository.sign_in(user)

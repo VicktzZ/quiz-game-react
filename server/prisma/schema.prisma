@@ -13,16 +13,16 @@ model User {
     id       Int    @id @default(autoincrement())
     username String
     cpf      String @unique
-    quizzes     Quiz[]
+    quizzes  Quiz[]
 }
 
 model Quiz {
-    id          Int      @id @default(autoincrement())
-    startAt     DateTime @default(now())
-    endAt       DateTime @updatedAt
-    createdBy   Int     
+    id          Int       @id @default(autoincrement())
+    startAt     DateTime  @default(now())
+    endAt       DateTime  @updatedAt
+    createdBy   Int       
     questions   Question[]
-    User        User   @relation(fields: [createdBy], references: [id])
+    User        User      @relation(fields: [createdBy], references: [id])
 }
 
 model Question {
@@ -31,6 +31,6 @@ model Question {
     text             String
     correctAnswer    String
     incorrectAnswers String
-    quizId           Int
-    quiz             Quiz @relation(fields: [quizId], references: [id])
+    quizId           Int?
+    quiz             Quiz?   @relation(fields: [quizId], references: [id])
 }

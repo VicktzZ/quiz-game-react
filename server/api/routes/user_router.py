@@ -25,3 +25,7 @@ async def get_user_by_cpf(cpf: str):
 @router.delete('/user/{id}')
 async def delete_user(id: int):
     return await user_controller.delete_user(id)
+
+@router.post('/user/sign-in')
+async def sign_in(user: UserDto):
+    return await user_controller.sign_in(user)

@@ -1,3 +1,4 @@
+from typing import List
 from fastapi import APIRouter
 from api.controllers.question_controller import QuestionController
 from models.Question import QuestionDto
@@ -25,3 +26,7 @@ async def update_question(id: int, question: QuestionDto):
 @router.delete('/question/{id}')
 async def delete_question(id: int):
     return await question_controller.delete_question(id)
+
+@router.post('/question/multiple')
+async def create_multiple_questions(questions: List[QuestionDto]):
+    return await question_controller.create_multiple_questions(questions)
