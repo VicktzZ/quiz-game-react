@@ -12,6 +12,7 @@ export default function useUserSession() {
     const logout = () => {
         localStorage.removeItem("user")
         setUser(null)
+        window.location.href = "/"
     }
 
     return { user, login, logout }

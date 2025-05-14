@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useUserSession } from "@/hooks"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -9,6 +9,10 @@ import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } fro
 import { checkCPF } from "@/utils"
 import { userService } from "@/services/userService"
 import { useLoader } from "@/contexts/LoaderContext"
+import { useMutation } from "@tanstack/react-query"
+import { useEffect } from "react"
+import { LogOut } from "lucide-react"
+import { enqueueSnackbar } from "notistack"
 
 function UserAvatar() {
     return (
@@ -19,8 +23,12 @@ function UserAvatar() {
 }
 
 export default function UserInfo() {
-    const { user, login } = useUserSession()
+    const { user, login, logout } = useUserSession()
     const { setLoading } = useLoader()
+
+    const mutation = useMutation({
+        mutationFn: (data: z.infer<typeof schema>) => userService.POST(data),
+    })
 
     const schema = z.object({
         username: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
@@ -32,43 +40,47 @@ export default function UserInfo() {
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
         setLoading(true)
-        const res = await userService.POST(data)
-        console.log(res)
+        mutation.mutate(data)
+    }
 
-        if (res.status < 300) {
-            login(res.data)
+    useEffect(() => {
+        if (mutation.isSuccess) {
+            login(mutation.data.data)
+            enqueueSnackbar(`Você logou como ${mutation.data.data.username}`, { variant: "success" })
         }
 
         setLoading(false)
-    }
+    }, [ mutation.isSuccess ])
 
     return (
         <div className="flex items-center gap-4">
             {user ? (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <UserAvatar />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-popover dark:bg-popover-foreground shadow-lg rounded-sm border max-w-52 animate-in-slide-up-fade data-[state=closed]:animate-out-slide-down-fade">
-                    <div>
-                        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <DropdownMenuLabel className="text-sm font-medium">My Account</DropdownMenuLabel>
+                <div className="flex items-center gap-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div>
+                                <UserAvatar />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-popover dark:bg-popover-foreground shadow-lg rounded-sm border max-w-52 animate-in-slide-up-fade data-[state=closed]:animate-out-slide-down-fade">
+                        <div>
+                            {/* <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                <DropdownMenuLabel className="text-sm font-medium">Settings</DropdownMenuLabel>
+                            </div>
+                            <DropdownMenuSeparator className="h-px bg-gray-200 dark:bg-gray-700 my-1" /> */}
+                            <div onClick={() => logout()} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer flex items-center gap-2">
+                                <LogOut className="h-4 w-4" />
+                                <DropdownMenuLabel className="text-sm font-medium">Logout</DropdownMenuLabel>
+                            </div>
                         </div>
-                        <DropdownMenuSeparator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
-                        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <DropdownMenuLabel className="text-sm font-medium">Settings</DropdownMenuLabel>
-                        </div>
-                        <DropdownMenuSeparator className="h-px bg-gray-200 dark:bg-gray-700 my-1" />
-                        <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                            <DropdownMenuLabel className="text-sm font-medium">Logout</DropdownMenuLabel>
-                        </div>
-                    </div>
-                </DropdownMenuContent>
-                </DropdownMenu>
+                    </DropdownMenuContent>
+                    </DropdownMenu>
+                    <p className="text-sm font-medium">{user.username}</p>
+                </div>
             ) : (
                 <Dialog>
                     <DialogTrigger>
-                        <Button className="flex flex-col bg-accent border-accent-foreground text-accent-foreground">Sign In</Button>
+                        <Button className="flex flex-col bg-accent border-accent-foreground text-accent-foreground hover:bg-accent/80">Sign In</Button>
                     </DialogTrigger>
                     <DialogPortal>
                         <DialogOverlay className="fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
