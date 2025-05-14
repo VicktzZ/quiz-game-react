@@ -11,14 +11,21 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as AppImport } from './routes/app'
+import { Route as QuizImport } from './routes/quiz'
+import { Route as ConcludedImport } from './routes/concluded'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
 
-const AppRoute = AppImport.update({
-  id: '/app',
-  path: '/app',
+const QuizRoute = QuizImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ConcludedRoute = ConcludedImport.update({
+  id: '/concluded',
+  path: '/concluded',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppImport
+    '/concluded': {
+      id: '/concluded'
+      path: '/concluded'
+      fullPath: '/concluded'
+      preLoaderRoute: typeof ConcludedImport
+      parentRoute: typeof rootRoute
+    }
+    '/quiz': {
+      id: '/quiz'
+      path: '/quiz'
+      fullPath: '/quiz'
+      preLoaderRoute: typeof QuizImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/concluded': typeof ConcludedRoute
+  '/quiz': typeof QuizRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/concluded': typeof ConcludedRoute
+  '/quiz': typeof QuizRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/concluded': typeof ConcludedRoute
+  '/quiz': typeof QuizRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app'
+  fullPaths: '/' | '/concluded' | '/quiz'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app'
-  id: '__root__' | '/' | '/app'
+  to: '/' | '/concluded' | '/quiz'
+  id: '__root__' | '/' | '/concluded' | '/quiz'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  ConcludedRoute: typeof ConcludedRoute
+  QuizRoute: typeof QuizRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  ConcludedRoute: ConcludedRoute,
+  QuizRoute: QuizRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/app"
+        "/concluded",
+        "/quiz"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/app": {
-      "filePath": "app.tsx"
+    "/concluded": {
+      "filePath": "concluded.tsx"
+    },
+    "/quiz": {
+      "filePath": "quiz.tsx"
     }
   }
 }

@@ -6,6 +6,7 @@ export default function useUserSession() {
 
     const login = (user: User) => {
         localStorage.setItem("user", JSON.stringify(user))
+        window.location.reload()
         setUser(user)
     }
 

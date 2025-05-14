@@ -9,14 +9,12 @@ import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } fro
 import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { useMutation } from "@tanstack/react-query"
 import { LogOut } from "lucide-react"
-import { enqueueSnackbar } from "notistack"
-import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-export function UserAvatar() {
+export function UserAvatar({ className }: { className?: string }) {
     return (
-        <div className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex cursor-pointer items-center justify-center">
+        <div className={`h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex cursor-pointer items-center justify-center ${className}`}>
             <svg className="h-6 w-6 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
         </div>
     )
@@ -40,17 +38,17 @@ export default function UserInfo() {
 
     const onSubmit = async (data: z.infer<typeof schema>) => {
         setLoading(true)
-        mutation.mutate(data)
+        mutation.mutate(data, {
+            onSuccess: (data) => {
+                login(data.data)
+                setLoading(false)
+            },
+            onError: () => {
+                console.error('error')
+                setLoading(false)
+            }
+        })
     }
-
-    useEffect(() => {
-        if (mutation.isSuccess) {
-            login(mutation.data.data)
-            enqueueSnackbar(`Você logou como ${mutation.data.data.username}`, { variant: "success" })
-        }
-
-        setLoading(false)
-    }, [ mutation.isSuccess ])
 
     return (
         <div className="flex items-center gap-4">
@@ -59,7 +57,7 @@ export default function UserInfo() {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div>
-                                <UserAvatar />
+                                <UserAvatar className='border border-black/20' />
                             </div>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="bg-popover dark:bg-gray-900 shadow-lg rounded-sm border max-w-52 animate-in-slide-up-fade data-[state=closed]:animate-out-slide-down-fade">

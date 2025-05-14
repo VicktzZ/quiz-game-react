@@ -25,7 +25,7 @@ class QuestionRepository:
         try:
             result = None
             await self.db.connect()
-            questions = await self.db.query_raw(f"SELECT * FROM question ORDER BY RANDOM() LIMIT {count};")
+            questions = await self.db.query_raw(f"SELECT * FROM Question ORDER BY RAND() LIMIT {count};")
             await self.db.disconnect()
             result = questions
         except Exception as e:

@@ -1,12 +1,9 @@
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import { ThemeProvider } from './theme/index.tsx'
 import { routeTree } from './routeTree.gen'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { SnackbarProvider } from 'notistack'
+import ContextProvider from '@/contexts/ContextProvider'
 
-const queryClient = new QueryClient()
 const router = createRouter({ routeTree })
 
 declare module '@tanstack/react-router' {
@@ -16,11 +13,7 @@ declare module '@tanstack/react-router' {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <SnackbarProvider>
-        <RouterProvider router={router} />
-      </SnackbarProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+  <ContextProvider>
+    <RouterProvider router={router} />
+  </ContextProvider>
 )
