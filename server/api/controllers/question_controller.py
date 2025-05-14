@@ -21,6 +21,8 @@ class QuestionController:
     async def delete_question(self, id: int):
         return await self.question_repository.delete(id)
     
-
     async def create_multiple_questions(self, questions: List[QuestionDto]):
         return await self.question_repository.create_multiple(questions)
+
+    async def take_random(self, count: int):
+        return await self.question_repository.take_random(count)

@@ -21,6 +21,20 @@ class QuestionRepository:
             await self.db.disconnect()
         return result
 
+    async def take_random(self, count: int):
+        try:
+            result = None
+            await self.db.connect()
+            questions = await self.db.query_raw(f"SELECT * FROM question ORDER BY RANDOM() LIMIT {count};")
+            await self.db.disconnect()
+            result = questions
+        except Exception as e:
+            await self.db.disconnect()
+            raise e
+        finally:
+            await self.db.disconnect()
+        return result
+
     async def get_all(self):
         try:
             result = None

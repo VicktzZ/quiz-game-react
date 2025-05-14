@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { useLoader } from "@/contexts/LoaderContext"
 import { useUserSession } from "@/hooks"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { userService } from "@/services/userService"
+import { checkCPF } from "@/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Dialog, DialogContent, DialogOverlay, DialogPortal, DialogTrigger } from "@radix-ui/react-dialog"
-import { checkCPF } from "@/utils"
-import { userService } from "@/services/userService"
-import { useLoader } from "@/contexts/LoaderContext"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect } from "react"
 import { LogOut } from "lucide-react"
 import { enqueueSnackbar } from "notistack"
+import { useEffect } from "react"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
 
-function UserAvatar() {
+export function UserAvatar() {
     return (
         <div className="h-12 w-12 rounded-full bg-gray-200 dark:bg-gray-700 flex cursor-pointer items-center justify-center">
             <svg className="h-6 w-6 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
@@ -55,27 +55,22 @@ export default function UserInfo() {
     return (
         <div className="flex items-center gap-4">
             {user ? (
-                <div className="flex items-center gap-2">
+                <div className="relative flex items-center gap-2 bottom-6">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <div>
                                 <UserAvatar />
                             </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-popover dark:bg-popover-foreground shadow-lg rounded-sm border max-w-52 animate-in-slide-up-fade data-[state=closed]:animate-out-slide-down-fade">
-                        <div>
-                            {/* <div className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800">
-                                <DropdownMenuLabel className="text-sm font-medium">Settings</DropdownMenuLabel>
-                            </div>
-                            <DropdownMenuSeparator className="h-px bg-gray-200 dark:bg-gray-700 my-1" /> */}
+                        <DropdownMenuContent align="end" className="bg-popover dark:bg-gray-900 shadow-lg rounded-sm border max-w-52 animate-in-slide-up-fade data-[state=closed]:animate-out-slide-down-fade">
+                            <p className="p-2 text-sm font-medium">{user.username}</p>
+                            <DropdownMenuSeparator />
                             <div onClick={() => logout()} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer flex items-center gap-2">
                                 <LogOut className="h-4 w-4" />
                                 <DropdownMenuLabel className="text-sm font-medium">Logout</DropdownMenuLabel>
                             </div>
-                        </div>
-                    </DropdownMenuContent>
+                        </DropdownMenuContent>
                     </DropdownMenu>
-                    <p className="text-sm font-medium">{user.username}</p>
                 </div>
             ) : (
                 <Dialog>

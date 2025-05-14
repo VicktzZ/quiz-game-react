@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { useTheme } from "@/theme"
 import { FaCog, FaMoon, FaSun } from "react-icons/fa"
 import UserInfo from "./UserInfo"
+import Card from "@/components/ui/Card"
 
 export default function BottomBar() {
     const { theme, setTheme } = useTheme()
@@ -11,7 +12,7 @@ export default function BottomBar() {
     }
 
     return (
-        <div className={`w-full h-16 flex items-center justify-center ${theme === "dark" ? "dark-card" : "light-card"}`}>
+        <Card className={`w-full h-16 flex items-center justify-center`}>
             <div className="flex items-center gap-2 justify-between w-full p-4">
                 <UserInfo />
                 <div className="flex items-center gap-2"> 
@@ -23,6 +24,6 @@ export default function BottomBar() {
                     </Button>
                 </div>
             </div>
-        </div>
+        </Card>
     )
 }

@@ -30,3 +30,7 @@ async def delete_question(id: int):
 @router.post('/question/multiple')
 async def create_multiple_questions(questions: List[QuestionDto]):
     return await question_controller.create_multiple_questions(questions)
+
+@router.get('/question/random/{count}')
+async def take_random(count: int):
+    return await question_controller.take_random(count)
