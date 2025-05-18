@@ -8,6 +8,7 @@ import { useQuizContext } from '@/contexts/QuizContext'
 import { useMutation } from '@tanstack/react-query'
 import { questionService } from '@/services/questionService'
 import { useLoader } from '@/contexts/LoaderContext'
+import { useEffect } from 'react'
 
 export const Route = createFileRoute('/')({
     component: Index,
@@ -15,13 +16,17 @@ export const Route = createFileRoute('/')({
 
 function Index() {
     const { user } = useUserSession()
-    const { setQuestions } = useQuizContext()
+    const { setQuestions, questionsAmount, reset } = useQuizContext()
     const { setLoading } = useLoader()
     const mutation = useMutation({
-        mutationFn: () => questionService.takeRandom(2)
+        mutationFn: () => questionService.takeRandom(questionsAmount)
     })
 
     const navigate = useNavigate()
+
+    useEffect(() => {
+        reset()
+    }, [])
 
     const createQuiz = () => {  
         setLoading(true)

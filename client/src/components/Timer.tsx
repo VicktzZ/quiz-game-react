@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 type TimerProps = {
   initialTime: number; // in seconds
   onTimeUp?: () => void;
+  onTimeExpired?: () => void;
   size?: 'sm' | 'md' | 'lg';
   isPaused?: boolean;
   onPause?: (timeLeft: number) => void;
@@ -12,13 +13,14 @@ type TimerProps = {
 export const Timer = ({
   initialTime,
   onTimeUp,
+  onTimeExpired,
   size = 'md',
   isPaused: externalPaused,
   onPause,
 }: TimerProps) => {
-  const [timeLeft, setTimeLeft] = useState(initialTime);
-  const [isPaused, setIsPaused] = useState(false);
-  const [prevInitialTime, setPrevInitialTime] = useState(initialTime);
+  const [timeLeft, setTimeLeft] = useState<number>(initialTime);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [prevInitialTime, setPrevInitialTime] = useState<number>(initialTime);
 
   useEffect(() => {
     if (initialTime !== prevInitialTime) {
@@ -50,7 +52,8 @@ export const Timer = ({
         setTimeLeft((prev) => {
           if (prev <= 1) {
             clearInterval(interval);
-            if (onTimeUp) onTimeUp();
+            onTimeUp?.();
+            onTimeExpired?.();
             return 0;
           }
           return prev - 1;

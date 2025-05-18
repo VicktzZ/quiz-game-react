@@ -11,21 +11,21 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as QuizFineshedImport } from './routes/quiz-fineshed'
 import { Route as QuizImport } from './routes/quiz'
-import { Route as ConcludedImport } from './routes/concluded'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
 
-const QuizRoute = QuizImport.update({
-  id: '/quiz',
-  path: '/quiz',
+const QuizFineshedRoute = QuizFineshedImport.update({
+  id: '/quiz-fineshed',
+  path: '/quiz-fineshed',
   getParentRoute: () => rootRoute,
 } as any)
 
-const ConcludedRoute = ConcludedImport.update({
-  id: '/concluded',
-  path: '/concluded',
+const QuizRoute = QuizImport.update({
+  id: '/quiz',
+  path: '/quiz',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,18 +46,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/concluded': {
-      id: '/concluded'
-      path: '/concluded'
-      fullPath: '/concluded'
-      preLoaderRoute: typeof ConcludedImport
-      parentRoute: typeof rootRoute
-    }
     '/quiz': {
       id: '/quiz'
       path: '/quiz'
       fullPath: '/quiz'
       preLoaderRoute: typeof QuizImport
+      parentRoute: typeof rootRoute
+    }
+    '/quiz-fineshed': {
+      id: '/quiz-fineshed'
+      path: '/quiz-fineshed'
+      fullPath: '/quiz-fineshed'
+      preLoaderRoute: typeof QuizFineshedImport
       parentRoute: typeof rootRoute
     }
   }
@@ -67,42 +67,42 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/concluded': typeof ConcludedRoute
   '/quiz': typeof QuizRoute
+  '/quiz-fineshed': typeof QuizFineshedRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/concluded': typeof ConcludedRoute
   '/quiz': typeof QuizRoute
+  '/quiz-fineshed': typeof QuizFineshedRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/concluded': typeof ConcludedRoute
   '/quiz': typeof QuizRoute
+  '/quiz-fineshed': typeof QuizFineshedRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/concluded' | '/quiz'
+  fullPaths: '/' | '/quiz' | '/quiz-fineshed'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/concluded' | '/quiz'
-  id: '__root__' | '/' | '/concluded' | '/quiz'
+  to: '/' | '/quiz' | '/quiz-fineshed'
+  id: '__root__' | '/' | '/quiz' | '/quiz-fineshed'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ConcludedRoute: typeof ConcludedRoute
   QuizRoute: typeof QuizRoute
+  QuizFineshedRoute: typeof QuizFineshedRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ConcludedRoute: ConcludedRoute,
   QuizRoute: QuizRoute,
+  QuizFineshedRoute: QuizFineshedRoute,
 }
 
 export const routeTree = rootRoute
@@ -116,18 +116,18 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/concluded",
-        "/quiz"
+        "/quiz",
+        "/quiz-fineshed"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/concluded": {
-      "filePath": "concluded.tsx"
-    },
     "/quiz": {
       "filePath": "quiz.tsx"
+    },
+    "/quiz-fineshed": {
+      "filePath": "quiz-fineshed.tsx"
     }
   }
 }
