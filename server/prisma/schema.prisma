@@ -10,27 +10,65 @@ generator client {
 }
 
 model User {
-    id       Int    @id @default(autoincrement())
-    username String
-    cpf      String @unique
-    quizzes  Quiz[]
+    id           Int           @id @default(autoincrement())
+    username     String
+    cpf          String        @unique
+    quizzes      Quiz[]
+    quizResults  QuizResult[]
 }
 
 model Quiz {
-    id          Int       @id @default(autoincrement())
-    startAt     DateTime  @default(now())
-    endAt       DateTime  @updatedAt
-    createdBy   Int       
+    id          Int        @id @default(autoincrement())
+    title       String
+    description String?
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    createdBy   Int
     questions   Question[]
-    User        User      @relation(fields: [createdBy], references: [id])
+    User        User       @relation(fields: [createdBy], references: [id])
+    quizResults QuizResult[]
+}
+
+model QuizResult {
+    id          Int        @id @default(autoincrement())
+    score       Int
+    totalQuestions Int
+    percentage  Float
+    createdAt   DateTime   @default(now())
+    userId      Int
+    quizId      Int?
+    answers     UserAnswer[]
+    User        User       @relation(fields: [userId], references: [id])
+    Quiz        Quiz?       @relation(fields: [quizId], references: [id])
+}
+
+model UserAnswer {
+    id          Int        @id @default(autoincrement())
+    questionId  Int
+    answer      String
+    isCorrect   Boolean
+    quizResultId Int
+    Question    Question   @relation(fields: [questionId], references: [id])
+    QuizResult  QuizResult @relation(fields: [quizResultId], references: [id])
 }
 
 model Question {
-    id               Int     @id @default(autoincrement())
-    category         String
-    text             String
-    correctAnswer    String
+    id          Int        @id @default(autoincrement())
+    category    String
     incorrectAnswers String
-    quizId           Int?
-    quiz             Quiz?   @relation(fields: [quizId], references: [id])
+    text        String
+    correctAnswer String
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    quizId      Int?
+    Quiz        Quiz?       @relation(fields: [quizId], references: [id])
+    answers     UserAnswer[]
+    options     Option[]
+}
+
+model Option {
+    id          Int        @id @default(autoincrement())
+    text        String
+    questionId  Int
+    Question    Question   @relation(fields: [questionId], references: [id])
 }
