@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi import status
 from models.QuizResult import QuizResultDto
-from controllers.quiz_result_controller import QuizResultController
+from api.controllers.quiz_result_controller import QuizResultController
 
 router = APIRouter()
 controller = QuizResultController()

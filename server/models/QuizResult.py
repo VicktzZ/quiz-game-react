@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import List
-from models.User import User
-from models.Quiz import Quiz
+from typing import Dict, List
 from models.UserAnswer import UserAnswer
 
 class QuizResult(BaseModel):
@@ -12,17 +10,19 @@ class QuizResult(BaseModel):
     percentage: float
     createdAt: datetime
     userId: int
-    quizId: int
     answers: List[UserAnswer]
-    user: User
-    quiz: Quiz
+    user: Dict
+
+class QuizResultAnswer(BaseModel):
+    questionId: int
+    answer: str
+    isCorrect: bool
 
 class QuizResultDto(BaseModel):
     score: int
     totalQuestions: int
     userId: int
-    quizId: int
-    answers: List[UserAnswer]
+    answers: List[QuizResultAnswer]
 
 class QuizResultHistory(BaseModel):
     id: int
@@ -30,5 +30,3 @@ class QuizResultHistory(BaseModel):
     totalQuestions: int
     percentage: float
     createdAt: datetime
-    quizTitle: str
-    quizDescription: str | None

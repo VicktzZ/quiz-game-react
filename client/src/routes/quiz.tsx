@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import Card from '@/components/ui/Card';
 import QuizAnimation from '@/layout/QuizAnimation';
 import { useQuizContext } from '@/contexts/QuizContext';
+import { useUser } from '@/contexts/UserContext';
 
 export const Route = createFileRoute('/quiz')({
   component: RouteComponent,
@@ -33,9 +34,20 @@ function RouteComponent() {
     setIsQuizFinished,
   } = useQuizContext();
   
+  const { user } = useUser();
   const navigate = useNavigate();
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [shuffledAnswers, setShuffledAnswers] = useState<AnswerOption[]>([]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate({ to: '/' });
+    }
+  }, [user]);
+
+  if (!user) {
+    return navigate({ to: '/' });
+  }
 
   useEffect(() => {
     if (!currentQuestion || (!currentQuestion.text && !currentQuestion.question)) {

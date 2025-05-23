@@ -13,22 +13,8 @@ model User {
     id           Int           @id @default(autoincrement())
     username     String
     cpf          String        @unique
-    quizzes      Quiz[]
     quizResults  QuizResult[]
 }
-
-model Quiz {
-    id          Int        @id @default(autoincrement())
-    title       String
-    description String?
-    createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
-    createdBy   Int
-    questions   Question[]
-    User        User       @relation(fields: [createdBy], references: [id])
-    quizResults QuizResult[]
-}
-
 model QuizResult {
     id          Int        @id @default(autoincrement())
     score       Int
@@ -36,10 +22,8 @@ model QuizResult {
     percentage  Float
     createdAt   DateTime   @default(now())
     userId      Int
-    quizId      Int?
     answers     UserAnswer[]
     User        User       @relation(fields: [userId], references: [id])
-    Quiz        Quiz?       @relation(fields: [quizId], references: [id])
 }
 
 model UserAnswer {
@@ -59,16 +43,5 @@ model Question {
     text        String
     correctAnswer String
     createdAt   DateTime   @default(now())
-    updatedAt   DateTime   @updatedAt
-    quizId      Int?
-    Quiz        Quiz?       @relation(fields: [quizId], references: [id])
     answers     UserAnswer[]
-    options     Option[]
-}
-
-model Option {
-    id          Int        @id @default(autoincrement())
-    text        String
-    questionId  Int
-    Question    Question   @relation(fields: [questionId], references: [id])
 }

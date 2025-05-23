@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Confetti from 'react-confetti'
 import { useQuizContext } from "@/contexts/QuizContext"
 import { useTheme } from '@/theme';
+import { useUser } from '@/contexts/UserContext';
+import { quizResultsService } from '@/services/quizResultsService';
 
 export const Route = createFileRoute('/quiz-fineshed')({
   component: RouteComponent,
@@ -10,9 +12,51 @@ export const Route = createFileRoute('/quiz-fineshed')({
 
 function RouteComponent() {
   const [exploding, setExploding] = useState(false);
-  const { score, questionsAmount, reset, isQuizFinished } = useQuizContext()
+  const { score, questionsAmount, reset, isQuizFinished, questions, selectedAnswers, setSelectedAnswers } = useQuizContext()
   const { theme } = useTheme()
+  const { user } = useUser()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!selectedAnswers) {
+      setSelectedAnswers(new Map())
+    }
+  }, [selectedAnswers, setSelectedAnswers])
+
+  useEffect(() => {
+    if (isQuizFinished && user?.id) {
+      saveQuizResults()
+    }
+  }, [ ])
+
+  const saveQuizResults = async () => {
+    try {
+      const answers = questions.map((question, index) => {
+        const answer = selectedAnswers.get(index) || ''
+        return {
+          questionId: question.id,
+          answer: answer,
+          isCorrect: answer === question.correctAnswer
+        }
+      })
+
+      if (!user?.id) {
+        console.error('Usuário não logado')
+        return
+      }
+
+      const quizResult = {
+        score: score,
+        totalQuestions: questionsAmount,
+        userId: user.id,
+        answers: answers
+      }
+      
+      await quizResultsService.POST(quizResult)
+    } catch (error) {
+      console.error('Erro ao salvar resultados:', error)
+    }
+  }
 
   useEffect(() => {
     setExploding(true);
@@ -57,7 +101,7 @@ function RouteComponent() {
             onClick={handleRestart}
             className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
           >
-            Jogar Novamente
+            Voltar
           </button>
         </div>
       </div>

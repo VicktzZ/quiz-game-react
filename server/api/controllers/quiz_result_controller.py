@@ -1,13 +1,9 @@
-from repositories.question_result_repository import QuestionResultRepository
-from models.QuizResult import QuizResultDto, QuizResultHistory
-from models.UserAnswer import UserAnswerDto
-from prisma import Prisma
-from fastapi import HTTPException
-from fastapi import status
+from repositories.quiz_result_repository import QuizResultRepository
+from models.QuizResult import QuizResultDto
 
 class QuizResultController:
     def __init__(self):
-        self.repository = QuestionResultRepository()
+        self.repository = QuizResultRepository()
 
     async def create_quiz_result(self, result: QuizResultDto):
         return await self.repository.create_quiz_result(result)

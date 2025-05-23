@@ -5,10 +5,12 @@ import Card from '@/components/ui/Card'
 import { Button } from '@/components/ui/button'
 import { Download, Plus } from 'lucide-react'
 import { useQuizContext } from '@/contexts/QuizContext'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { questionService } from '@/services/questionService'
 import { useLoader } from '@/contexts/LoaderContext'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
+import { quizResultsService } from '@/services/quizResultsService'
+import { exportDataToXlsx } from '@/utils'
 
 export const Route = createFileRoute('/')({
     component: Index,
@@ -18,30 +20,55 @@ function Index() {
     const { user } = useUserSession()
     const { setQuestions, questionsAmount, reset } = useQuizContext()
     const { setLoading } = useLoader()
-    const mutation = useMutation({
-        mutationFn: () => questionService.takeRandom(questionsAmount)
+    const navigate = useNavigate()
+    
+    const randomQuestionsMutation = useMutation({
+        mutationFn: () => questionService.takeRandom(questionsAmount),
+        onSuccess: ({ data }) => {
+            setQuestions(data)
+            navigate({ to: '/quiz' })
+            setLoading(false)
+        },
+        onError: () => {
+            setLoading(false)
+        }
+
     })
 
-    const navigate = useNavigate()
+    const { data: quizHistory, isPending, refetch } = useQuery({
+        queryKey: ['quiz-history', user?.id],
+        queryFn: async () => (await quizResultsService.getQuizHistory(user?.id || 0)).data,
+        staleTime: Infinity,
+        enabled: !!user,
+    })
+
+    setLoading(isPending)
+
+    const quizzyHistoryInfo = useMemo(() => {
+        const played = quizHistory?.length || 0
+        const won = quizHistory?.filter((quiz) => quiz.score === quiz.totalQuestions).length || 0
+        const respondedQuestions = quizHistory?.reduce((total, quiz) => total + quiz.answers.length, 0) || 0
+        const correctAnswers = quizHistory?.reduce((total, quiz) => total + quiz.answers.filter((answer) => answer.isCorrect).length, 0) || 0
+        const wrongAnswers = quizHistory?.reduce((total, quiz) => total + quiz.answers.filter((answer) => !answer.isCorrect).length, 0) || 0
+
+        return {
+            played,
+            won,
+            respondedQuestions,
+            correctAnswers,
+            wrongAnswers
+        }
+    }, [quizHistory])
+
 
     useEffect(() => {
         reset()
+        refetch()
     }, [])
 
     const createQuiz = () => {  
         setLoading(true)
-        mutation.mutate(undefined, {
-            onSuccess: ({ data }) => {
-                setQuestions(data)
-                console.log(data)
-                navigate({ to: '/quiz' })
-                setLoading(false)
-            },
-            onError: () => {
-                console.error('error')
-                setLoading(false)
-            }
-        })
+        randomQuestionsMutation.mutate()
     }
 
     return (
@@ -55,31 +82,31 @@ function Index() {
                 <div className='flex flex-col gap-4'>
                     <Card className='flex items-center justify-between p-4'>
                         <div>Quizzy jogado(s)</div>
-                        <div>{user?.quizzes_played || 0}</div>
+                        <div>{quizzyHistoryInfo.played}</div>
                     </Card>
                     <Card className='flex items-center justify-between p-4'>
                         <div>Quizzy vencido(s)</div>
-                        <div>{user?.quizzes_won || 0}</div>
+                        <div>{quizzyHistoryInfo.won}</div>
                     </Card>
                     <Card className='flex items-center justify-between p-4'>
                         <div>Questões respondida(s)</div>
-                        <div>{user?.questions_answered || 0}</div>
+                        <div>{quizzyHistoryInfo.respondedQuestions}</div>
                     </Card>
                     <Card className='flex items-center justify-between p-4'>
                         <div>Questões acertada(s)</div>
-                        <div>{user?.questions_correct || 0}</div>
+                        <div>{quizzyHistoryInfo.correctAnswers}</div>
                     </Card>
                     <Card className='flex items-center justify-between p-4'>
                         <div>Questões errada(s)</div>
-                        <div>{user?.questions_wrong || 0}</div>
+                        <div>{quizzyHistoryInfo.wrongAnswers}</div>
                     </Card>
-                    <Button variant="outline" disabled={!user} className='w-full'>
+                    <Button onClick={() => exportDataToXlsx(quizHistory || [])} variant="outline" disabled={!user} className='w-full'>
                         <Download />
                         Exportar dados
                     </Button>
                 </div>
             </div>
-            <Button onClick={createQuiz} disabled={!user || mutation.isPending} className='w-full'>
+            <Button onClick={createQuiz} disabled={!user || randomQuestionsMutation.isPending} className='w-full'>
                 <Plus />
                 Novo Quizzy
             </Button>

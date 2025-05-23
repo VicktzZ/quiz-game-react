@@ -20,5 +20,7 @@ export interface QuizContext {
   handleAnswer: (answer: string) => void
   reset: () => void
   isQuizFinished: boolean
-  setIsQuizFinished: (isQuizFinished: boolean) => void
+  setIsQuizFinished: (isFinished: boolean) => void
+  selectedAnswers: Map<number, string>
+  setSelectedAnswers: (answers: Map<number, string>) => void
 }

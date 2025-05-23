@@ -25,9 +25,18 @@ class QuestionRepository:
         try:
             result = None
             await self.db.connect()
-            questions = await self.db.query_raw(f"SELECT * FROM Question ORDER BY RAND() LIMIT {count};")
+            questions = await self.db.question.find_many()
+            
+            # Garantir que temos pelo menos o número de questões solicitado
+            if len(questions) < count:
+                raise Exception(f"Não há {count} questões disponíveis")
+            
+            # Selecionar aleatoriamente as questões necessárias
+            import random
+            selected_questions = random.sample(questions, count)
+            
             await self.db.disconnect()
-            result = questions
+            result = selected_questions
         except Exception as e:
             await self.db.disconnect()
             raise e

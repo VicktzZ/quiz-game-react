@@ -2,7 +2,7 @@ from typing import List
 import requests
 
 url = "http://localhost:8000/question/multiple"
-questions: List = requests.get("https://tryvia.ptr.red/api.php?amount=100&difficulty=medium").json()['results']
+questions: List = requests.get("https://tryvia.ptr.red/api.php?amount=100&difficulty=easy").json()['results']
 questions = [{
     "category": question['category'],
     "text": question['question'],

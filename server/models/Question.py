@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+from typing import Dict, List
+from datetime import datetime
 
 class Question(BaseModel):
     id: int
@@ -6,7 +8,8 @@ class Question(BaseModel):
     text: str
     correctAnswer: str
     incorrectAnswers: str
-    quizId: int
+    createdAt: datetime
+    answers: List[Dict]
 
 class QuestionDto(BaseModel):
     category: str

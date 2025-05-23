@@ -17,4 +17,5 @@ export interface QuestionWithIndex extends BaseQuestion {
 
 export default interface Question extends BaseQuestion {
   index?: number; // For tracking question position in the quiz
+  selectedAnswer?: string; // User's selected answer
 }

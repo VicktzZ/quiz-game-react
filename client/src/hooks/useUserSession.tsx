@@ -1,12 +1,17 @@
 import { useState } from "react";
 import type { User } from "@/types";
 
-export default function useUserSession() {
+interface UserSession {
+    user: User | null;
+    login: (user: User) => void;
+    logout: () => void;
+}
+
+export default function useUserSession(): UserSession {
     const [ user, setUser ] = useState(JSON.parse(localStorage.getItem("user") || "null"))
 
     const login = (user: User) => {
         localStorage.setItem("user", JSON.stringify(user))
-        window.location.reload()
         setUser(user)
     }
 
